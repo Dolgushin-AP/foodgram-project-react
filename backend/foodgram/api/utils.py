@@ -1,19 +1,19 @@
 from django.db.models.aggregates import Sum
 from django.http import HttpResponse
 
-from api.serializers import RecipeIngredients
+from api.serializers import RecipeIngredient
 
 
 def download_cart(self, request):
-    ingredients = RecipeIngredients.objects.filter(
+    ingredients = RecipeIngredient.objects.filter(
         recipe__shopping__user=request.user).values(
             'ingredient__name', 'ingredient__measurement_unit').annotate(
-                amount=Sum('amount'))
+                amount=Sum('total_amount'))
     text = ''
     for ingredient in ingredients:
         text += (f'•  {ingredient["ingredient__name"]}'
                  f'({ingredient["ingredient__measurement_unit"]})'
-                 f'— {ingredient["amount"]}\n')
+                 f'— {ingredient["total_amount"]}\n')
     headers = {
         'Content-Disposition': 'attachment; filename=cart.txt'}
     return HttpResponse(

@@ -1,12 +1,12 @@
-import base64
-from django.core.files.base import ContentFile
+from django.db.transaction import atomic
 from djoser.serializers import UserSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField
 
-from recipes.models import (Favourite, Ingredient, Recipe, RecipeIngredients,
+from api.fields import Base64ImageField
+from recipes.models import (Favourite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Tag)
 from users.models import Follow, User
 
@@ -28,12 +28,23 @@ class MyUserSerializer(UserSerializer):
         return Follow.objects.filter(user=user, author=obj).exists()
 
 
+class RecipeShowSerializer(ModelSerializer):
+    '''
+    Дополнительный сериализатор для отображения рецептов
+    в подписках, избранном и покупках
+    '''
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+
+
 class FollowSerializer(MyUserSerializer):
     '''Сериализатор подписoк'''
 
     recipes_count = serializers.IntegerField(source='recipes.count',
                                              read_only=True)
-    recipes = SerializerMethodField(method_name='get_recipes')
+    recipes = RecipeShowSerializer(many=True, read_only=True)
     is_subscribed = serializers.BooleanField(default=True)
 
     class Meta:
@@ -43,12 +54,6 @@ class FollowSerializer(MyUserSerializer):
                   'is_subscribed')
         read_only_fields = ('email', 'username',
                             'first_name', 'last_name')
-
-    def get_recipes(self, obj):
-        recipes = obj.recipes.all()
-        serializer = RecipeShowSerializer(recipes, many=True,
-                                           context=self.context)
-        return serializer.data
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -76,7 +81,7 @@ class IngredientRecipeCreationSerializer(ModelSerializer):
         source='ingredient.measurement_unit')
 
     class Meta:
-        model = RecipeIngredients
+        model = RecipeIngredient
         fields = ('id', 'amount', 'name', 'measurement_unit')
 
     def to_representation(self, instance):
@@ -85,24 +90,13 @@ class IngredientRecipeCreationSerializer(ModelSerializer):
         return data
 
 
-class Base64ImageField(serializers.ImageField):
-    """Кастомный сериализатор поля для фото рецепта"""
-
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-        return super().to_internal_value(data)
-
-
 class RecipeGetSerializer(ModelSerializer):
     '''Сериализатор получения рецепта'''
 
     tags = TagSerializer(many=True, read_only=True)
     author = MyUserSerializer(read_only=True)
     ingredients = IngredientRecipeCreationSerializer(
-        source='recipeingredients', many=True)
+        source='recipeingredient', many=True)
     image = Base64ImageField()
     is_favoure = SerializerMethodField(read_only=True)
     is_in_cart = SerializerMethodField(read_only=True)
@@ -145,53 +139,35 @@ class RecipeCreateSerializer(ModelSerializer):
             raise ValidationError('Добавьте тег.')
         return value
 
-    def validate_ingredients(self, value):
-        if not value:
-            raise ValidationError('Добавьте ингридиент.')
-        for i in value:
-            if i['amount'] <= 0:
-                raise ValidationError('Количество должно быть больше нуля!')
-        return value
-
     def to_representation(self, instance):
         request = self.context.get('request')
         context = {'request': request}
         return RecipeGetSerializer(instance,
                                    context=context).data
 
-    def create(self, validated_data):
-        tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(**validated_data)
+    def addon_for_create_update_methods(self, ingredients, tags, recipe):
         recipe.tags.set(tags)
-        for ingredient in ingredients:
-            RecipeIngredients.objects.create(recipe=recipe,
-                                             ingredient=ingredient.get('id'),
-                                             amount=ingredient.get('amount'))
+        RecipeIngredient.objects.bulk_create([RecipeIngredient(
+            recipe=recipe,
+            ingredient=ingredient['id'],
+            amount=ingredient['amount'],
+        ) for ingredient in ingredients])
         return recipe
 
-    def update(self, instance, validated_data):
-        tags = validated_data.pop('tags', None)
-        if tags is not None:
-            instance.tags.set(tags)
-        ingredients = validated_data.pop('ingredients', None)
-        if ingredients is not None:
-            instance.ingredients.clear()
-            for ingredient in ingredients:
-                amount = ingredient['amount']
-                RecipeIngredients.objects.update_or_create(
-                    recipe=instance,
-                    ingredient=ingredient.get('id'),
-                    defaults={'amount': amount})
-        return super().update(instance, validated_data)
+    @atomic
+    def create(self, validated_data):
+        user = self.context['request'].user
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(author=user, **validated_data)
+        self.addon_for_create_update_methods(ingredients, tags, recipe)
+        return recipe
 
-
-class RecipeShowSerializer(ModelSerializer):
-    '''
-    Дополнительный сериализатор для отображения рецептов
-    в подписках, избранном и покупках
-    '''
-
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')
+    @atomic
+    def update(self, recipe, validated_data):
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        recipe.tags.clear()
+        recipe.ingredients.clear()
+        self.addon_for_create_update_methods(ingredients, tags, recipe)
+        return super().update(recipe, validated_data)

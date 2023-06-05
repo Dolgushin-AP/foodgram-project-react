@@ -58,8 +58,9 @@ class Recipe(models.Model):
     text = models.TextField(verbose_name='Текст')
     ingredients = models.ManyToManyField(Ingredient,
                                          verbose_name='Ингредиенты',
-                                         through='RecipeIngredients',
-                                         related_name='recipes')
+                                         through='RecipeIngredient',
+                                         related_name='recipes',
+                                         validators=(validate_ingredients,))
     tags = models.ManyToManyField(Tag,
                                   verbose_name='Тег',
                                   related_name='recipes',
@@ -80,23 +81,27 @@ class Recipe(models.Model):
         return str(self.name)
 
 
-class RecipeIngredients(models.Model):
+class RecipeIngredient(models.Model):
     '''Модель ингредиентов для рецепта'''
 
     recipe = models.ForeignKey(Recipe,
                                verbose_name='Рецепт',
                                on_delete=models.CASCADE,
-                               related_name='recipeingredients')
+                               related_name='recipeingredient')
     ingredient = models.ForeignKey(Ingredient,
                                    verbose_name='Ингредиент',
                                    on_delete=models.CASCADE,
-                                   related_name='recipeingredients')
+                                   related_name='recipeingredient')
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество', validators=(MinValueValidator(1),))
 
     class Meta:
         verbose_name = 'Ингредиент для рецепта'
         verbose_name_plural = 'Ингредиенты для рецепта'
+        constraints = (
+            UniqueConstraint(fields=('recipe', 'ingredient'),
+                             name='recipeingredient'),
+        )
 
     def __str__(self):
         return f'{str(self.ingredient)} in {str(self.recipe)}-{self.amount}'
