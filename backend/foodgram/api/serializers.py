@@ -139,6 +139,15 @@ class RecipeCreateSerializer(ModelSerializer):
             raise ValidationError('Добавьте тег.')
         return value
 
+    def validate_ingredients(self, value):
+        '''Валидатор ингредиентов'''
+        if not value:
+            raise ValidationError('Добавьте ингредиент.')
+        for ingredient in value:
+            if ingredient['amount'] <= 0:
+                raise ValidationError('Количество должно быть больше нуля!')
+        return value
+
     def to_representation(self, instance):
         request = self.context.get('request')
         context = {'request': request}

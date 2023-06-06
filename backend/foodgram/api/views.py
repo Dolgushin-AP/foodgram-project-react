@@ -57,16 +57,14 @@ class MyUserViewSet(UserViewSet):
                                           context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if request.method == 'DELETE':
-            if not Follow.objects.filter(user=user, author=author).exists():
-                return Response({'errors': 'Сначала нужно подписаться!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            subscription = get_object_or_404(Follow,
-                                             user=user,
-                                             author=author)
-            subscription.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        if not Follow.objects.filter(user=user, author=author).exists():
+            return Response({'errors': 'Сначала нужно подписаться!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        subscription = get_object_or_404(Follow,
+                                        user=user,
+                                        author=author)
+        subscription.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -100,17 +98,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def perform_update(self, serializer):
-        serializer.save()
-
     @action(detail=True,
             methods=['post', 'delete'],
             permission_classes=[IsAuthenticated])
     def favourite(self, request, pk=None):
         if request.method == 'POST':
             return self.post_method(Favourite, request.user, pk)
-        else:
-            return self.delete_method(Favourite, request.user, pk)
+        return self.delete_method(Favourite, request.user, pk)
 
     @action(detail=True,
             methods=['post', 'delete'],
@@ -118,8 +112,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk=None):
         if request.method == 'POST':
             return self.post_method(ShoppingCart, request.user, pk)
-        else:
-            return self.delete_method(ShoppingCart, request.user, pk)
+        return self.delete_method(ShoppingCart, request.user, pk)
 
     def post_method(self, model, user, pk):
         if model.objects.filter(user=user, recipe__id=pk).exists():
