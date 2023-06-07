@@ -41,12 +41,12 @@ http://localhost/api/docs/
 
 ## Локально проект доступен по ссылкам:
 ```
-- http://127.0.0.1:8000/admin/
-- http://127.0.0.1:8000/api/
-- http://127.0.0.1:8000/api/recipes/
-- http://127.0.0.1:8000/api/users/
-- http://127.0.0.1:8000/api/tags/
-- http://127.0.0.1:8000/api/ingredients/
+http://127.0.0.1:8000/admin/
+http://127.0.0.1:8000/api/
+http://127.0.0.1:8000/api/recipes/
+http://127.0.0.1:8000/api/users/
+http://127.0.0.1:8000/api/tags/
+http://127.0.0.1:8000/api/ingredients/
 ```
 
 Автор раздела backend: Долгушин А.П.
