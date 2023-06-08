@@ -149,8 +149,7 @@ class RecipeCreateSerializer(ModelSerializer):
             })
         ingredients_list = []
         for item in ingredients:
-            ingredient = get_object_or_404(Ingredient, id=item['id'])
-            if ingredient in ingredients_list:
+            if item['id'] in ingredients_list:
                 raise ValidationError({
                     'ingredients': 'Ингредиенты не должны дублироваться!'
                 })
@@ -158,7 +157,7 @@ class RecipeCreateSerializer(ModelSerializer):
                 raise ValidationError({
                     'amount': 'Количество должно быть больше нуля!'
                 })
-            ingredients_list.append(ingredient)
+            ingredients_list.append(item['id'])
         return value
 
     def to_representation(self, instance):
