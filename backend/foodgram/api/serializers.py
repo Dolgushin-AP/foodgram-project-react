@@ -1,4 +1,5 @@
 from django.db.transaction import atomic
+from django.shortcuts import get_object_or_404
 from djoser.serializers import UserSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -141,11 +142,23 @@ class RecipeCreateSerializer(ModelSerializer):
 
     def validate_ingredients(self, value):
         '''Валидатор ингредиентов'''
-        if not value:
-            raise ValidationError('Добавьте ингредиент.')
-        for ingredient in value:
-            if ingredient['amount'] <= 0:
-                raise ValidationError('Количество должно быть больше нуля!')
+        ingredients = value
+        if not ingredients:
+            raise ValidationError({
+                'ingredients': 'Добавьте хотя бы один ингредиент!'
+            })
+        ingredients_list = []
+        for item in ingredients:
+            ingredient = get_object_or_404(Ingredient, id=item['id'])
+            if ingredient in ingredients_list:
+                raise ValidationError({
+                    'ingredients': 'Ингредиенты не должны дублироваться!'
+                })
+            if int(item['amount']) <= 0:
+                raise ValidationError({
+                    'amount': 'Количество должно быть больше нуля!'
+                })
+            ingredients_list.append(ingredient)
         return value
 
     def to_representation(self, instance):
