@@ -1,6 +1,5 @@
 from django.db.models.aggregates import Sum
 from django.http import HttpResponse
-
 from api.serializers import RecipeIngredient
 
 

@@ -5,7 +5,6 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
-
 from api.filters import NameSearchFilter, RecipeFilter
 from api.pagination import CustomPagination
 from api.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
@@ -14,7 +13,7 @@ from api.serializers import (FollowSerializer, IngredientSerializer,
                              RecipeGetSerializer, RecipeShowSerializer,
                              TagSerializer)
 from api.utils import download_cart
-from recipes.models import (Favourite, Ingredient, Recipe, RecipeIngredient,
+from recipes.models import (Favourite, Ingredient, Recipe,
                             ShoppingCart, Tag)
 from users.models import Follow, User
 
@@ -60,9 +59,7 @@ class MyUserViewSet(UserViewSet):
         if not Follow.objects.filter(user=user, author=author).exists():
             return Response({'errors': 'Сначала нужно подписаться!'},
                             status=status.HTTP_400_BAD_REQUEST)
-        subscription = get_object_or_404(Follow,
-                                        user=user,
-                                        author=author)
+        subscription = get_object_or_404(Follow, user=user, author=author)
         subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

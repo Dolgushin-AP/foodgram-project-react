@@ -1,5 +1,4 @@
 import os
-
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -114,7 +113,7 @@ AUTH_USER_MODEL = 'users.User'
 DJOSER = {
     'SERIALIZERS': {
         'current_user': 'api.serializers.MyUserSerializer',
-        'user': 'api.serializers.MyUserSerializer',        
+        'user': 'api.serializers.MyUserSerializer',
     },
     'PERMISSIONS': {
         'set_username': ['rest_framework.permissions.IsAdminUser'],
@@ -133,5 +132,5 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 6,
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ],    
+    ],
 }
