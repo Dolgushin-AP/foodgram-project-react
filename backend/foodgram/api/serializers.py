@@ -141,11 +141,22 @@ class RecipeCreateSerializer(ModelSerializer):
 
     def validate_ingredients(self, value):
         '''Валидатор ингредиентов'''
-        if not value:
-            raise ValidationError('Добавьте ингредиент.')
-        for ingredient in value:
-            if ingredient['amount'] <= 0:
-                raise ValidationError('Количество должно быть больше нуля!')
+        ingredients = value
+        if not ingredients:
+            raise ValidationError({
+                'ingredients': 'Добавьте хотя бы один ингредиент!'
+            })
+        ingredients_list = []
+        for item in ingredients:
+            if item['id'] in ingredients_list:
+                raise ValidationError({
+                    'ingredients': 'Ингредиенты не должны дублироваться!'
+                })
+            if int(item['amount']) <= 0:
+                raise ValidationError({
+                    'amount': 'Количество должно быть больше нуля!'
+                })
+            ingredients_list.append(item['id'])
         return value
 
     def to_representation(self, instance):

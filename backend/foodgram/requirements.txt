@@ -5,3 +5,4 @@ pillow==9.5.0
 django-filter==23.2
 djoser==2.2.0
 python_dotenv==1.0.0
+gunicorn==20.1.0
