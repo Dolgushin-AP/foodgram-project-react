@@ -5,9 +5,9 @@ from api.serializers import (FollowSerializer, IngredientSerializer,
                              MyUserSerializer, RecipeCreateSerializer,
                              RecipeGetSerializer, RecipeShowSerializer,
                              TagSerializer)
+from api.utils import download_cart
 from recipes.models import (Favourite, Ingredient, Recipe,
                             ShoppingCart, Tag)
-from api.utils import download_cart
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
