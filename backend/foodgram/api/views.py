@@ -5,6 +5,8 @@ from api.serializers import (FollowSerializer, IngredientSerializer,
                              MyUserSerializer, RecipeCreateSerializer,
                              RecipeGetSerializer, RecipeShowSerializer,
                              TagSerializer)
+from recipes.models import (Favourite, Ingredient, Recipe,
+                            ShoppingCart, Tag)
 from api.utils import download_cart
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -13,8 +15,6 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
-from recipes.models import (Favourite, Ingredient, Recipe,
-                            ShoppingCart, Tag)
 from users.models import Follow, User
 
 
