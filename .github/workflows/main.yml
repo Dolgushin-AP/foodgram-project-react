@@ -65,6 +65,10 @@ jobs:
             echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
             echo DB_HOST=${{ secrets.DB_HOST }} >> .env
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+<<<<<<< HEAD
+=======
+            echo SECKET_KEY=${{ secrets.SECKET_KEY }} >> .env
+>>>>>>> ffc1f4ebc9a635f5426802d3b84055a260b2b271
             sudo docker-compose up -d --build
             sudo docker-compose exec -T backend python manage.py collectstatic --no-input
             sudo docker-compose exec -T backend python manage.py migrate
@@ -78,4 +82,8 @@ jobs:
             with:
               to: ${{ secrets.TELEGRAM_TO }}
               token: ${{ secrets.TELEGRAM_TOKEN }}
+<<<<<<< HEAD
               message: ${{ github.workflow }} успешно выполнен!
+=======
+              message: ${{ github.workflow }} успешно выполнен!
+>>>>>>> ffc1f4ebc9a635f5426802d3b84055a260b2b271

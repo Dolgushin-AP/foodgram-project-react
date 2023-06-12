@@ -40,6 +40,17 @@ http://localhost/api/docs/
 ```
 
 ## Локально проект доступен по ссылкам:
+<<<<<<< HEAD
+
+http://127.0.0.1:8000/admin/ <br>
+http://127.0.0.1:8000/api/ <br>
+http://127.0.0.1:8000/api/recipes/ <br>
+http://127.0.0.1:8000/api/users/ <br>
+http://127.0.0.1:8000/api/tags/ <br>
+http://127.0.0.1:8000/api/ingredients/ <br>
+
+=======
+>>>>>>> ffc1f4ebc9a635f5426802d3b84055a260b2b271
 
 http://127.0.0.1:8000/admin/ <br>
 http://127.0.0.1:8000/api/ <br>
