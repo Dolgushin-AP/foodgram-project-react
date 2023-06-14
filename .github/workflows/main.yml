@@ -40,7 +40,7 @@ jobs:
         with:
           push: true
           context: ./backend/foodgram/
-          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_back:v2
+          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_back:v3
 
   deploy:
     runs-on: ubuntu-latest
@@ -54,7 +54,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd infra
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_back:v2
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_back:v3
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_front:v1
             sudo touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
@@ -65,6 +65,7 @@ jobs:
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
             sudo docker-compose up -d --build
             sudo docker-compose exec -T backend python manage.py collectstatic --no-input
+            sudo docker-compose exec -T backend python manage.py makemigrations
             sudo docker-compose exec -T backend python manage.py migrate
 
   send_message:
