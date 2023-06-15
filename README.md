@@ -48,5 +48,20 @@ http://127.0.0.1:8000/api/users/ <br>
 http://127.0.0.1:8000/api/tags/ <br>
 http://127.0.0.1:8000/api/ingredients/ <br>
 
+## Развёрнутый проект после деплоя доступен по ссылкам:
+
+http://84.201.178.118/recipes/ <br>
+http://84.201.178.118/subscriptions/ <br>
+http://84.201.178.118/admin/ <br>
+http://84.201.178.118/api/docs/ <br>
+
+Данныя юзера-админа:
+```
+Имя: Anton
+Фамилия: Dolgushin
+Имя пользователя: shell
+Адрес электронной почты: russhell@yandex.ru
+Пароль: derparole
+```
 
 Автор раздела backend: Долгушин А.П.
