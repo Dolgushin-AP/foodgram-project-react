@@ -55,7 +55,7 @@ http://84.201.178.118/subscriptions/ <br>
 http://84.201.178.118/admin/ <br>
 http://84.201.178.118/api/docs/ <br>
 
-Данныя юзера-админа:
+Данныt юзера-админа:
 ```
 Имя: Anton
 Фамилия: Dolgushin
