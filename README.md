@@ -80,6 +80,25 @@ DB_PORT=5432
 ```
 docker-compose exec web python manage.py createsuperuser
 ```
+<<<<<<< HEAD
+=======
+
+## Развёрнутый проект после деплоя доступен по ссылкам:
+
+http://84.201.178.118/recipes/ <br>
+http://84.201.178.118/subscriptions/ <br>
+http://84.201.178.118/admin/ <br>
+http://84.201.178.118/api/docs/ <br>
+
+Данныt юзера-админа:
+```
+Имя: Anton
+Фамилия: Dolgushin
+Имя пользователя: shell
+Адрес электронной почты: russhell@yandex.ru
+Пароль: derparole
+```
+>>>>>>> b8ac39e9279a45205556ad8e2a8b8c7090de620e
 
 ## Развёрнутый проект после деплоя доступен по ссылкам:
 
