@@ -1,8 +1,10 @@
 ## Описание проекта
+[![YaMDb workflow](https://github.com/Dolgushin-AP/foodgram-project-react/actions/workflows/main.yml/badge.svg)](https://github.com/Dolgushin-AP/foodgram-project-react/actions/workflows/main.yml)
 ***- Foodgram, «Продуктовый помощник»***
 Foodgram - это онлайн-сервис и API для него. На этом сервисе пользователи смогут публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся рецепты в список «Избранное», а перед походом в магазин скачивать сводный список продуктов, необходимых для приготовления одного или нескольких выбранных блюд..
 
 ## Инструкции по установке
+
 ***- Клонируйте репозиторий:***
 ```
 git clone https://github.com/Dolgushin-AP/foodgram-project-react.git
@@ -38,7 +40,37 @@ python manage.py runserver
 ```
 http://localhost/api/docs/
 ```
+### Деплой:
+Установить и запустить Docker Desktop
 
+Запуск контейнеров:
+```
+docker compose up -d --build
+```
+
+Заполнение .env по шаблону:
+```
+DB_ENGINE=django.db.backends.postgresql
+```
+```
+DB_NAME=postgres
+```
+```
+POSTGRES_USER=postgres
+```
+```
+POSTGRES_PASSWORD=postgres
+```
+```
+DB_HOST=db
+```
+```
+DB_PORT=5432
+```
+Создание суперпользователя:
+```
+docker-compose exec web python manage.py createsuperuser
+```
 ## Локально проект доступен по ссылкам:
 
 http://127.0.0.1:8000/admin/ <br>
