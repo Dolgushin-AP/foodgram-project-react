@@ -175,10 +175,10 @@ class RecipeCreateSerializer(ModelSerializer):
 
     @atomic
     def create(self, validated_data):
-#       user = self.context['request'].user
+        # user = self.context['request'].user
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-#       recipe = Recipe.objects.create(author=user, **validated_data)
+        # recipe = Recipe.objects.create(author=user, **validated_data)
         recipe = Recipe.objects.create(**validated_data)
         self.addon_for_create_update_methods(ingredients, tags, recipe)
         return recipe
