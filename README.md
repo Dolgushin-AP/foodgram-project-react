@@ -40,6 +40,15 @@ python manage.py runserver
 ```
 http://localhost/api/docs/
 ```
+## Локально проект доступен по ссылкам:
+
+http://127.0.0.1:8000/admin/ <br>
+http://127.0.0.1:8000/api/ <br>
+http://127.0.0.1:8000/api/recipes/ <br>
+http://127.0.0.1:8000/api/users/ <br>
+http://127.0.0.1:8000/api/tags/ <br>
+http://127.0.0.1:8000/api/ingredients/ <br>
+
 ### Деплой:
 Установить и запустить Docker Desktop
 
@@ -71,14 +80,6 @@ DB_PORT=5432
 ```
 docker-compose exec web python manage.py createsuperuser
 ```
-## Локально проект доступен по ссылкам:
-
-http://127.0.0.1:8000/admin/ <br>
-http://127.0.0.1:8000/api/ <br>
-http://127.0.0.1:8000/api/recipes/ <br>
-http://127.0.0.1:8000/api/users/ <br>
-http://127.0.0.1:8000/api/tags/ <br>
-http://127.0.0.1:8000/api/ingredients/ <br>
 
 ## Развёрнутый проект после деплоя доступен по ссылкам:
 
