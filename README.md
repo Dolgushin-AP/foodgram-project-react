@@ -1,5 +1,5 @@
 ## Описание проекта
-[![YaMDb workflow](https://github.com/Dolgushin-AP/foodgram-project-react/actions/workflows/main.yml/badge.svg)](https://github.com/Dolgushin-AP/foodgram-project-react/actions/workflows/main.yml)
+[![YaMDb workflow](https://github.com/Dolgushin-AP/foodgram-project-react/actions/workflows/main.yml/badge.svg)](https://github.com/Dolgushin-AP/foodgram-project-react/actions/workflows/main.yml) <br>
 ***- Foodgram, «Продуктовый помощник»***
 Foodgram - это онлайн-сервис и API для него. На этом сервисе пользователи смогут публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся рецепты в список «Избранное», а перед походом в магазин скачивать сводный список продуктов, необходимых для приготовления одного или нескольких выбранных блюд..
 
