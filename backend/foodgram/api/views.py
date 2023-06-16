@@ -97,7 +97,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=True,
             methods=['post', 'delete'],
             permission_classes=[IsAuthenticated])
-    def favourite(self, request, pk=None):
+    def favorite(self, request, pk=None):
         if request.method == 'POST':
             return self.post_method(Favourite, request.user, pk)
         return self.delete_method(Favourite, request.user, pk)

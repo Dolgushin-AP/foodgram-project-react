@@ -10,7 +10,7 @@ services:
       - ./.env
 
   backend:
-    image: arraton/foodgram_back:v4
+    image: arraton/foodgram_back:v5
     restart: always
     volumes:
       - static_value:/app/static/
