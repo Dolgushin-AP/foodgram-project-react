@@ -9,7 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 
-from api.filters import NameSearchFilter, RecipeFilter
+from api.filters import IngredientFilter, RecipeFilter
 from api.pagination import CustomPagination
 from api.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from api.serializers import (CartCheckSerializer, FavouriteCheckSerializer, FollowSerializer,
@@ -77,7 +77,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (NameSearchFilter,)
+    filter_backends = (IngredientFilter,)
     search_fields = ('^name',)
     pagination_class = None
 
@@ -97,20 +97,20 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if self.request.user.is_authenticated:
             return Recipe.objects.annotate(
-                is_favorited=Exists(
+                is_favoure=Exists(
                     Favourite.objects.filter(
                         user=self.request.user, recipe__pk=OuterRef('pk')
                     )
                 ),
-                is_in_shopping_cart=Exists(
+                is_in_cart=Exists(
                     ShoppingCart.objects.filter(
                         user=self.request.user, recipe__pk=OuterRef('pk')
                     )
                 ),
             )
         return Recipe.objects.annotate(
-            is_favorited=Value(False, output_field=BooleanField()),
-            is_in_shopping_cart=Value(False, output_field=BooleanField()),
+            is_favoure=Value(False, output_field=BooleanField()),
+            is_in_cart=Value(False, output_field=BooleanField()),
         )
 
     @atomic()
@@ -189,7 +189,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         methods=['GET'], detail=False, permission_classes=(IsAuthenticated,)
     )
-    def download_cart(self, request):
+    def download_shopping_cart(self, request):
         ingredients = (
             RecipeIngredient.objects.filter(recipe__list__user=request.user)
             .values('ingredient__name', 'ingredient__measurement_unit')
