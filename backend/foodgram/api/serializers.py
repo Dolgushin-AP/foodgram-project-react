@@ -190,31 +190,3 @@ class RecipeCreateSerializer(ModelSerializer):
         recipe.ingredients.clear()
         self.addon_for_create_update_methods(ingredients, tags, recipe)
         return super().update(recipe, validated_data)
-
-
-class CartCheckSerializer(serializers.ModelSerializer):
-    """Сериализатор покупок"""
-
-    class Meta:
-        model = ShoppingCart
-        fields = ('user', 'recipe')
-
-    def validate(self, value):
-        """Валидатор рецепта в корзине"""
-        user = self.context['request'].user
-        recipe = value['recipe']
-        shop_list = user.list.filter(recipe=recipe).exists()
-
-        if self.context.get('request').method == 'POST' and shop_list:
-            raise serializers.ValidationError(
-                'Этот рецепт ранее был добавлен в корзину'
-            )
-        if self.context.get('request').method == 'DELETE' and not shop_list:
-            raise serializers.ValidationError('Этого рецепта нет в корзине')
-        return value
-
-    # def validate(self, data):
-    #     user = data['user']
-    #     if user.shopping_cart.filter(recipe=data['recipe']).exists():
-    #         raise serializers.ValidationError('Рецепт уже в корзине')
-    #     return data

@@ -9,10 +9,10 @@ from rest_framework.response import Response
 from api.filters import NameSearchFilter, RecipeFilter
 from api.pagination import CustomPagination
 from api.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
-from api.serializers import (CartCheckSerializer, FollowSerializer,
-                             IngredientSerializer, MyUserSerializer,
-                             RecipeCreateSerializer, RecipeGetSerializer,
-                             RecipeShowSerializer, TagSerializer)
+from api.serializers import (FollowSerializer, IngredientSerializer,
+                             MyUserSerializer, RecipeCreateSerializer,
+                             RecipeGetSerializer, RecipeShowSerializer,
+                             TagSerializer)
 from api.utils import download_shopping_cart
 from recipes.models import Favourite, Ingredient, Recipe, ShoppingCart, Tag
 from users.models import Follow, User
@@ -103,38 +103,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return self.post_method(Favourite, request.user, pk)
         return self.delete_method(Favourite, request.user, pk)
 
-    # @action(detail=True,
-    #         methods=['POST', 'DELETE'],
-    #         permission_classes=[IsAuthenticated])
-    # def shopping_cart(self, request, pk=None):
-    #     if request.method == 'POST':
-    #         return self.post_method(ShoppingCartSerializer, request, pk)
-    #     return self.delete_method(ShoppingCart, request, pk)
-
     @action(detail=True,
-            methods=['POST'],
+            methods=['POST', 'DELETE'],
             permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk=None):
-        data = {
-            'user': request.user.id,
-            'recipe': pk,
-        }
-        serializer = CartCheckSerializer(
-            data=data, context={'request': request}
-        )
-        serializer.is_valid(raise_exception=True)
-        return self.post_method(ShoppingCart, request.user, pk)
-
-    @shopping_cart.mapping.delete
-    def del_shopping_cart(self, request, pk=None):
-        data = {
-            'user': request.user.id,
-            'recipe': pk,
-        }
-        serializer = CartCheckSerializer(
-            data=data, context={'request': request}
-        )
-        serializer.is_valid(raise_exception=True)
+        if request.method == 'POST':
+            return self.post_method(ShoppingCart, request.user, pk)
         return self.delete_method(ShoppingCart, request.user, pk)
 
     def post_method(self, model, user, pk):
