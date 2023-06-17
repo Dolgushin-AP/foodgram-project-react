@@ -4,9 +4,9 @@ from django.http import HttpResponse
 from api.serializers import RecipeIngredient
 
 
-def download_shopping_cart(self, request):
+def download_shopping_cart(request):
     ingredients = RecipeIngredient.objects.filter(
-        recipe__shopping__user=request.user).values(
+        recipe__shopping_cart__user=request.user).values(
             'ingredient__name', 'ingredient__measurement_unit').annotate(
                 amount=Sum('total_amount'))
     text = ''
