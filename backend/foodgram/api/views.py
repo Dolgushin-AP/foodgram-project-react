@@ -131,8 +131,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=False,
             methods=['GET'],
             permission_classes=[IsAuthenticated])
-    def download_shopping_cart(self, request):
-        return download_shopping_cart(self, request)
+    def download_shopping_cart(request):
+        return download_shopping_cart(request)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
