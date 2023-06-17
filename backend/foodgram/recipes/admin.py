@@ -40,6 +40,6 @@ class ShoppingCartAdmin(admin.ModelAdmin):
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'colour', 'slug')
-    search_fields = ('name', 'colour', 'slug')
-    list_filter = ('name', 'colour', 'slug')
+    list_display = ('pk', 'name', 'color', 'slug')
+    search_fields = ('name', 'color', 'slug')
+    list_filter = ('name', 'color', 'slug')

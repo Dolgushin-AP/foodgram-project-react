@@ -11,7 +11,7 @@ class Tag(models.Model):
     name = models.CharField(verbose_name='Имя тега',
                             max_length=200,
                             unique=True)
-    colour = models.CharField(verbose_name='Цвет',
+    color = models.CharField(verbose_name='Цвет HEX-код',
                               max_length=7,
                               unique=True)
     slug = models.SlugField(verbose_name='Слаг',
@@ -64,7 +64,7 @@ class Recipe(models.Model):
                                   related_name='recipes',
                                   blank=False)
     cooking_time = models.PositiveSmallIntegerField(
-        verbose_name='Время приготовления',
+        verbose_name='Время приготовления, мин',
         validators=[MinValueValidator(1, message='Минимальное значение - 1!')])
     date = models.DateTimeField(verbose_name='Дата публикации',
                                 auto_now_add=True)

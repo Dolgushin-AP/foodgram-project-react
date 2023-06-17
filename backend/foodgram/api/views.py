@@ -26,7 +26,7 @@ class MyUserViewSet(UserViewSet):
     pagination_class = CustomPagination
 
     @action(detail=False,
-            methods=['get'],
+            methods=['GET'],
             permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
         user = request.user
@@ -38,7 +38,7 @@ class MyUserViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
     @action(detail=True,
-            methods=['post', 'delete'],
+            methods=['POST', 'DELETE'],
             permission_classes=[IsAuthenticated])
     def subscribe(self, request, id):
         user = request.user
@@ -76,7 +76,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    '''Вюсет рецептов'''
+    '''Вьюсет рецептов'''
 
     queryset = Recipe.objects.all()
     permission_classes = (IsAuthorOrReadOnly,)
@@ -84,7 +84,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     http_method_names = [
-        m for m in viewsets.ModelViewSet.http_method_names if m not in ['put']
+        method for method in viewsets.ModelViewSet.http_method_names if method not in ['PUT']
     ]
 
     def get_serializer_class(self):
@@ -96,7 +96,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
     @action(detail=True,
-            methods=['post', 'delete'],
+            methods=['POST', 'DELETE'],
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
         if request.method == 'POST':
@@ -104,7 +104,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return self.delete_method(Favourite, request.user, pk)
 
     @action(detail=True,
-            methods=['post', 'delete'],
+            methods=['POST', 'DELETE'],
             permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk=None):
         if request.method == 'POST':
@@ -129,7 +129,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False,
-            methods=['get'],
+            methods=['GET'],
             permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
         return download_shopping_cart(self, request)
