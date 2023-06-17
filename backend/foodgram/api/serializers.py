@@ -1,12 +1,13 @@
-from api.fields import Base64ImageField
 from django.db.transaction import atomic
 from djoser.serializers import UserSerializer
-from recipes.models import (Favourite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingCart, Tag)
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField
+
+from api.fields import Base64ImageField
+from recipes.models import (Favourite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Tag)
 from users.models import Follow, User
 
 
@@ -191,3 +192,55 @@ class RecipeCreateSerializer(ModelSerializer):
         recipe.ingredients.clear()
         self.addon_for_create_update_methods(ingredients, tags, recipe)
         return super().update(recipe, validated_data)
+
+
+class FavouriteCheckSerializer(serializers.ModelSerializer):
+    """Сериализатор проверки избранного"""
+
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    recipe = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all())
+
+    class Meta:
+        model = Favourite
+        fields = ('user', 'recipe')
+
+    def validate(self, value):
+        """Валидатор рецепта в избранном"""
+        user = self.context['request'].user
+        recipe = value['recipe']
+        favourite = user.favourites.filter(recipe=recipe).exists()
+
+        if self.context.get('request').method == 'POST' and favourite:
+            raise serializers.ValidationError(
+                'Этот рецепт ранее был добавлен в избранное'
+            )
+        if self.context.get('request').method == 'DELETE' and not favourite:
+            raise serializers.ValidationError(
+                'Этого рецепта нет в избранном'
+            )
+        return value
+
+
+class CartCheckSerializer(serializers.ModelSerializer):
+    """Сериализатор покупок"""
+
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    recipe = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all())
+
+    class Meta:
+        model = ShoppingCart
+        fields = ('user', 'recipe')
+
+    def validate(self, value):
+        """Валидатор рецепта в корзине"""
+        user = self.context['request'].user
+        recipe = value['recipe']
+        cart_list = user.list.filter(recipe=recipe).exists()
+
+        if self.context.get('request').method == 'POST' and cart_list:
+            raise serializers.ValidationError(
+                'Этот рецепт ранее был добавлен в корзину'
+            )
+        if self.context.get('request').method == 'DELETE' and not cart_list:
+            raise serializers.ValidationError('Этого рецепта нет в корзине')
+        return value

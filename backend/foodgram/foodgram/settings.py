@@ -1,4 +1,5 @@
 import os
+
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -8,6 +9,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='django-insecure-0e2bbyehg)nz08cev&
 DEBUG = (os.getenv('DEBUG', 'False') == 'True')
 # DEBUG = True
 
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
 INSTALLED_APPS = [
@@ -56,6 +58,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': os.getenv(

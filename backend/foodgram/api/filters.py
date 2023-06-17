@@ -1,32 +1,78 @@
-from django.contrib.auth import get_user_model
-from django_filters import rest_framework
-from recipes.models import Recipe
+# from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.forms.fields import MultipleChoiceField
+from django_filters.rest_framework import FilterSet, filters
+from django_filters.widgets import BooleanWidget
 from rest_framework.filters import SearchFilter
 
-User = get_user_model()
+from recipes.models import Recipe
+
+
+# User = get_user_model()
 
 
 class NameSearchFilter(SearchFilter):
     search_param = 'name'
 
 
-class RecipeFilter(rest_framework.FilterSet):
-    author = rest_framework.ModelChoiceFilter(queryset=User.objects.all())
-    tags = rest_framework.AllValuesMultipleFilter(field_name='tags__slug')
-    is_favoure = rest_framework.BooleanFilter(method='filter_is_favoure')
-    is_in_cart = rest_framework.BooleanFilter(
-        method='filter_is_in_cart')
+class TagMultipleChoiceField(MultipleChoiceField):
+    '''Фильтрация по тэгам'''
+
+    def validate(self, value):
+        if self.required and not value:
+            raise ValidationError(
+                self.error_messages['required'], code='required'
+            )
+        for val in value:
+            if val in self.choices and not self.valid_value(val):
+                raise ValidationError(
+                    self.error_messages['invalid_choice'],
+                    code='invalid_choice',
+                    params={'value': val},
+                )
+
+
+class TagFilter(filters.AllValuesMultipleFilter):
+
+    field_class = TagMultipleChoiceField
+
+
+class RecipeFilter(FilterSet):
+    '''Фильтрация рецептов'''
+
+    author = filters.AllValuesMultipleFilter(
+        field_name='author__id', label='автор'
+    )
+    is_in_cart = filters.BooleanFilter(
+        widget=BooleanWidget(), label='В корзине.'
+    )
+    is_favoure = filters.BooleanFilter(
+        widget=BooleanWidget(), label='В избранном.'
+    )
+    tags = TagFilter(field_name='tags__slug')
 
     class Meta:
         model = Recipe
-        fields = ('author', 'tags', 'is_favoure', 'is_in_cart')
+        fields = ('author', 'tags', 'is_in_cart', 'is_favoure')
 
-    def filter_is_favoure(self, queryset, name, value):
-        if value and self.request.user.is_authenticated:
-            return queryset.filter(favourites__user=self.request.user)
-        return queryset
 
-    def filter_is_in_cart(self, queryset, name, value):
-        if value and self.request.user.is_authenticated:
-            return queryset.filter(shopping__user=self.request.user)
-        return queryset
+# class RecipeFilter(rest_framework.FilterSet):
+#     author = rest_framework.ModelChoiceFilter(queryset=User.objects.all())
+#     tags = rest_framework.AllValuesMultipleFilter(field_name='tags__slug')
+#     is_favoure = rest_framework.BooleanFilter(method='filter_is_favoure')
+#     is_in_cart = rest_framework.BooleanFilter(
+#         method='filter_is_in_cart')
+
+#     class Meta:
+#         model = Recipe
+#         fields = ('author', 'tags', 'is_favoure', 'is_in_cart')
+
+#     def filter_is_favoure(self, queryset, name, value):
+#         if value and self.request.user.is_authenticated:
+#             return queryset.filter(favourites__user=self.request.user)
+#         return queryset
+
+#     def filter_is_in_cart(self, queryset, name, value):
+#         if value and self.request.user.is_authenticated:
+#             return queryset.filter(shopping__user=self.request.user)
+#         return queryset
