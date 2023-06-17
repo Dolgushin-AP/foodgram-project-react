@@ -12,7 +12,7 @@ from api.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from api.serializers import (FollowSerializer, IngredientSerializer,
                              MyUserSerializer, RecipeCreateSerializer,
                              RecipeGetSerializer, RecipeShowSerializer,
-                             TagSerializer)
+                             ShoppingCartSerializer, TagSerializer)
 from api.utils import download_shopping_cart
 from recipes.models import Favourite, Ingredient, Recipe, ShoppingCart, Tag
 from users.models import Follow, User
@@ -108,8 +108,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk=None):
         if request.method == 'POST':
-            return self.post_method(ShoppingCart, request.user, pk)
-        return self.delete_method(ShoppingCart, request.user, pk)
+            return self.post_method(ShoppingCartSerializer, request, pk)
+        return self.delete_method(ShoppingCart, request, pk)
 
     def post_method(self, model, user, pk):
         if model.objects.filter(user=user, recipe__id=pk).exists():
