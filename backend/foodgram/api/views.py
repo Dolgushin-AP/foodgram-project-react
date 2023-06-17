@@ -108,11 +108,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     )
                 ),
             )
-        else:
-            return Recipe.objects.annotate(
-                is_favorited=Value(False, output_field=BooleanField()),
-                is_in_shopping_cart=Value(False, output_field=BooleanField()),
-            )
+        return Recipe.objects.annotate(
+            is_favorited=Value(False, output_field=BooleanField()),
+            is_in_shopping_cart=Value(False, output_field=BooleanField()),
+        )
 
     @atomic()
     def perform_create(self, serializer):
