@@ -20,6 +20,9 @@ from recipes.models import Favourite, Ingredient, Recipe, ShoppingCart, Tag
 from users.models import Follow, User
 
 
+SHOP_LIST = 'Список покупок:'
+FILE = 'shopping_list.txt'
+
 class MyUserViewSet(UserViewSet):
     '''Вьюсет для пользователей и подписок'''
 
@@ -86,7 +89,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     http_method_names = [
-        method for method in viewsets.ModelViewSet.http_method_names if method not in ['PUT']
+        m for m in viewsets.ModelViewSet.http_method_names if m not in ['PUT']
     ]
 
     def get_serializer_class(self):
@@ -135,12 +138,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
         ingredients = (
-            RecipeIngredient.objects.filter(recipe__shopping_cart__user=request.user)
+            RecipeIngredient.objects.filter(recipe__cart__user=request.user)
             .values('ingredient__name', 'ingredient__measurement_unit')
             .order_by('ingredient__name')
             .annotate(amount=Sum('amount'))
         )
-        result = settings.SHOP_LIST
+        result = SHOP_LIST
         result += '\n'.join(
             (
                 f'{ingredient["ingredient__name"]} - {ingredient["amount"]}/'
@@ -148,8 +151,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 for ingredient in ingredients
             )
         )
-        response = HttpResponse(result, content_type='text/plain; charset=UTF-8')
-        response['Content-Disposition'] = f'attachment; filename={settings.FILE}'
+        response = HttpResponse(result, content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename={FILE}'
         return response
 
 

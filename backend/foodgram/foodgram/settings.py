@@ -127,6 +127,3 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
-
-SHOP_LIST = 'Список покупок:'
-FILE = 'shopping_list.txt'
