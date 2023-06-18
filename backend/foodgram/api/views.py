@@ -1,3 +1,5 @@
+from django.db.models.aggregates import Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
@@ -11,11 +13,14 @@ from api.pagination import CustomPagination
 from api.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from api.serializers import (FollowSerializer, IngredientSerializer,
                              MyUserSerializer, RecipeCreateSerializer,
-                             RecipeGetSerializer, RecipeShowSerializer,
-                             TagSerializer)
-from api.utils import download_shopping_cart
+                             RecipeGetSerializer, RecipeIngredient,
+                             RecipeShowSerializer, TagSerializer)
+# from api.utils import download_shopping_cart
 from recipes.models import Favourite, Ingredient, Recipe, ShoppingCart, Tag
 from users.models import Follow, User
+
+
+SHOP_LIST = 'Список покупок:'
 
 
 class MyUserViewSet(UserViewSet):
@@ -131,8 +136,27 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=False,
             methods=['GET'],
             permission_classes=[IsAuthenticated])
-    def download_shopping_cart(self):
-        return download_shopping_cart(self)
+    def download_shopping_cart(self, request):
+        ingredients = (
+            RecipeIngredient.objects.filter(recipe__shopping_cart__user=request.user)
+            .values('ingredient__name', 'ingredient__measurement_unit')
+            .order_by('ingredient__name')
+            .annotate(total=Sum('amount'))
+        )
+        result = SHOP_LIST
+        result += '\n'.join(
+            (
+                f'{ingredient["ingredient__name"]} - {ingredient["total_amount"]}/'
+                f'{ingredient["ingredient__measurement_unit"]}'
+                for ingredient in ingredients
+            )
+        )
+        response = HttpResponse(result, content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename=cart.txt'
+        return response
+
+    # def download_shopping_cart(self):
+    #     return download_shopping_cart(self)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
