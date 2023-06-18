@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.models.aggregates import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -15,13 +16,8 @@ from api.serializers import (FollowSerializer, IngredientSerializer,
                              MyUserSerializer, RecipeCreateSerializer,
                              RecipeGetSerializer, RecipeIngredient,
                              RecipeShowSerializer, TagSerializer)
-# from api.utils import download_shopping_cart
 from recipes.models import Favourite, Ingredient, Recipe, ShoppingCart, Tag
 from users.models import Follow, User
-
-
-SHOP_LIST = 'Список покупок:'
-FILE = 'shopping_list.txt'
 
 
 class MyUserViewSet(UserViewSet):
@@ -144,7 +140,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             .order_by('ingredient__name')
             .annotate(amount=Sum('amount'))
         )
-        result = SHOP_LIST
+        result = settings.SHOP_LIST
         result += '\n'.join(
             (
                 f'{ingredient["ingredient__name"]} - {ingredient["amount"]}/'
@@ -152,12 +148,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 for ingredient in ingredients
             )
         )
-        response = HttpResponse(result, content_type='text/plain')
-        response['Content-Disposition'] = f'attachment; filename={FILE}'
+        response = HttpResponse(result, content_type='text/plain; charset=UTF-8')
+        response['Content-Disposition'] = f'attachment; filename={settings.FILE}'
         return response
-
-    # def download_shopping_cart(self):
-    #     return download_shopping_cart(self)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
