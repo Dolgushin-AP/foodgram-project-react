@@ -21,6 +21,7 @@ from users.models import Follow, User
 
 
 SHOP_LIST = 'Список покупок:'
+FILE = 'cart.txt'
 
 
 class MyUserViewSet(UserViewSet):
@@ -152,7 +153,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
         )
         response = HttpResponse(result, content_type='text/plain')
-        response['Content-Disposition'] = f'attachment; filename=cart.txt'
+        response['Content-Disposition'] = f'attachment; filename={FILE}'
         return response
 
     # def download_shopping_cart(self):
