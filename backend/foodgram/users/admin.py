@@ -5,6 +5,7 @@ from users.models import Follow, User
 
 EMPTY_VALUE = '-пусто-'
 
+
 @admin.register(Follow)
 class FolowAdmin(admin.ModelAdmin):
     list_display = ('pk', 'user', 'author')

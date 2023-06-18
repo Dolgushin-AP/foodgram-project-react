@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.db.models.aggregates import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -22,6 +21,7 @@ from users.models import Follow, User
 
 SHOP_LIST = 'Список покупок:'
 FILE = 'shopping_list.txt'
+
 
 class MyUserViewSet(UserViewSet):
     '''Вьюсет для пользователей и подписок'''
