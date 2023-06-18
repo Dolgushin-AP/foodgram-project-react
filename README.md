@@ -80,10 +80,6 @@ DB_PORT=5432
 ```
 sudo docker-compose exec backend python manage.py createsuperuser
 ```
-Загрузка базы ингредиентов:
-```
-sudo docker-compose exec backend python manage.py import_db
-```
 
 ## Развёрнутый проект после деплоя доступен по ссылкам:
 
