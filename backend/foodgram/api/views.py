@@ -21,7 +21,7 @@ from users.models import Follow, User
 
 
 SHOP_LIST = 'Список покупок:'
-FILE = 'cart.txt'
+FILE = 'shopping_list.txt'
 
 
 class MyUserViewSet(UserViewSet):
@@ -142,7 +142,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             RecipeIngredient.objects.filter(recipe__shopping_cart__user=request.user)
             .values('ingredient__name', 'ingredient__measurement_unit')
             .order_by('ingredient__name')
-            .annotate(total=Sum('amount'))
+            .annotate(amount=Sum('amount'))
         )
         result = SHOP_LIST
         result += '\n'.join(
